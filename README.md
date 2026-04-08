@@ -11,13 +11,7 @@ Atelectasis', 'Cardiomegaly', 'Effusion', 'Infiltration', 'Mass', 'Nodule', 'Pne
   ● Libraries - Python 3.6, pytorch 1.2.0, torchvision 0.2.0, matplotlib 3.1.2, scikit-image 0.16.2, opencv-python 4.1.2, numpy 1.17.4, scipy 1.0.0-3.4.2 <br/>
   ● Flask 1.1.1 <br/>
   # Implementation
-  Input Screen
-  ![alt text](Input.png)<br/><br/>
-  Output Screen
-  ![alt text](Output.png)<br/>
-  <br/>
-   
-  You can also refer to this video in youtube for implementation - https://youtu.be/NInJLWiycJk
+  
   
   
   
