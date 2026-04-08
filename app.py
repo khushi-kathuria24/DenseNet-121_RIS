@@ -3,8 +3,6 @@ from uuid import uuid4
 
 from flask import Flask, request, render_template, send_from_directory
 
-__author__ = 'ibininja'
-
 app = Flask(__name__)
 # app = Flask(__name__, static_folder="images")
 
