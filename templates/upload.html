@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
-{% block title %}Login{% endblock %}
+{% block title %}Upload | Radiology Annotation{% endblock %}
+{% block hero_title %}Upload and Analyze X-ray{% endblock %}
+{% block hero_subtitle %}Select one or more chest X-ray images and pick the condition to visualize annotations.{% endblock %}
 {% block messages %}
    {{super()}}
    
@@ -7,54 +9,144 @@
 {% block page_body %}
     
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var filePicker = document.getElementById("file-picker");
+            var msg = document.getElementById("msg");
 
-        $("#file-picker").change(function(){
+            filePicker.addEventListener("change", function () {
+                var input = document.getElementById("file-picker");
 
-            var input = document.getElementById('file-picker');
+                for (var i = 0; i < input.files.length; i++) {
+                    // koala.jpg, koala.JPG substring(index) lastIndexOf('a') koala.1.jpg
+                    var ext = input.files[i].name.substring(input.files[i].name.lastIndexOf('.') + 1).toLowerCase();
 
-            for (var i=0; i<input.files.length; i++)
-            {
-            //koala.jpg, koala.JPG substring(index) lastIndexOf('a') koala.1.jpg
-                var ext= input.files[i].name.substring(input.files[i].name.lastIndexOf('.')+1).toLowerCase()
-
-                if ((ext == 'jpg') || (ext == 'png'))
-                {
-                    $("#msg").text("Files are supported")
+                    if (ext === "jpg" || ext === "png") {
+                        msg.textContent = "Files are supported";
+                    } else {
+                        msg.textContent = "Files are NOT supported";
+                        document.getElementById("file-picker").value = "";
+                    }
                 }
-                else
-                {
-                    $("#msg").text("Files are NOT supported")
-                    document.getElementById("file-picker").value ="";
-                }
-
-            }
-
-
-        } );
+            });
+        });
 
     </script>
-    <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" >
-        <div class="form-group">
-        
-        <strong>Upload Image file and Disease name:</strong><br>
-        <label for="file-pickere">Choose an Image file:</label>
-        <input id="file-picker" type="file" name="file" accept="image/*" multiple>
-        <div id="msg"></div>
-        <label for="disease">Choose a Disease:</label>
-        <select id="disease" name="disease">
-            <option value="Atelectasis">Atelectasis</option>
-            <option value="Cardiomegaly">Cardiomegaly</option>
-            <option value="Effusion">Effusion</option>
-            <option value="Infiltration">Infiltration</option>
-            <option value="Nodule">Nodule</option>
-            <option value="Pneumonia">Pneumonia</option>
-            <option value="Pneumothorax">Pneumothorax</option>
+    <style>
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 16px;
+        }
 
+        .upload-panel,
+        .tips-panel {
+            border: 1px solid rgba(19, 35, 47, 0.12);
+            border-radius: 16px;
+            background: #ffffff;
+            padding: 16px;
+        }
 
-        </select>
-        <input type="submit" value="Upload!" id="upload-button">
+        .upload-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #183344;
+        }
 
-    </form>
+        .picker,
+        .disease-select {
+            width: 100%;
+            border: 1px solid rgba(24, 51, 68, 0.2);
+            border-radius: 12px;
+            background: #f8fcfa;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .picker {
+            padding: 10px;
+        }
+
+        .status-msg {
+            min-height: 24px;
+            margin-bottom: 8px;
+            font-size: 0.92rem;
+            color: #33625f;
+        }
+
+        .submit-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 18px;
+            background: linear-gradient(135deg, #0f766e, #0a5c56);
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(10, 92, 86, 0.25);
+        }
+
+        .tips-title {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #183344;
+            font-family: "Sora", sans-serif;
+        }
+
+        .tips-list {
+            margin: 0;
+            padding-left: 18px;
+            color: #3f5c6f;
+            font-size: 0.93rem;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 900px) {
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="upload-grid">
+        <form id="upload-form" class="upload-panel" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+            <label class="upload-label" for="file-picker">Choose X-ray image files</label>
+            <input class="picker" id="file-picker" type="file" name="file" accept="image/*" multiple>
+
+            <div id="msg" class="status-msg"></div>
+
+            <label class="upload-label" for="disease">Choose disease class</label>
+            <select class="disease-select" id="disease" name="disease">
+                <option value="Atelectasis">Atelectasis</option>
+                <option value="Cardiomegaly">Cardiomegaly</option>
+                <option value="Effusion">Effusion</option>
+                <option value="Infiltration">Infiltration</option>
+                <option value="Nodule">Nodule</option>
+                <option value="Pneumonia">Pneumonia</option>
+                <option value="Pneumothorax">Pneumothorax</option>
+            </select>
+
+            <input class="submit-btn" type="submit" value="Generate Annotation" id="upload-button">
+        </form>
+
+        <aside class="tips-panel">
+            <h2 class="tips-title">Quick Notes</h2>
+            <ul class="tips-list">
+                <li>Use clear chest X-ray PNG or JPG images for best results.</li>
+                <li>Select the disease class before submitting.</li>
+                <li>Generated outputs include heatmap and annotated image overlays.</li>
+                <li>Multiple files can be uploaded in one run.</li>
+            </ul>
+        </aside>
+    </div>
     
 
 {% endblock %}
